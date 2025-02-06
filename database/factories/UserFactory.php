@@ -24,7 +24,10 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
+            'dni' => fake()->unique()->numberBetween(10000000, 99999999),
             'name' => fake()->name(),
+            'birth_date' => fake()->date(),
+            'phone' => fake()->phoneNumber(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
