@@ -38,7 +38,7 @@ class UserController extends Controller
 
         User::create($validated);
 
-        return response()->json(['message' => 'Usuario creado.']);
+        return redirect()->route('users.index')->with('success', 'Usuario creado.');
     }
 
     public function edit($id)
