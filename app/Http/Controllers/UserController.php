@@ -10,29 +10,30 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $query = User::query();
-
-        // Filtrado avanzado por nombre, dni y email
+    
         if ($request->has('search') && !empty($request->search)) {
             $query->where('name', 'like', "%{$request->search}%")
                   ->orWhere('dni', 'like', "%{$request->search}%")
                   ->orWhere('email', 'like', "%{$request->search}%");
         }
-
+    
         $users = $query->paginate(10);
-
+    
+        // Responder en JSON si es una petición AJAX
         if ($request->ajax()) {
             return response()->json([
                 'users' => $users->items(),
-                'pagination' => (string) $users->links()
+                'pagination' => (string) $users->links(),
             ]);
         }
-
+    
         return view('users.index', compact('users'));
     }
+    
 
     public function store(Request $request)
     {
-        // Validación de los campos del formulario
+        // Validar datos del usuario
         $validated = $request->validate([
             'dni' => 'required|string|max:10|unique:users,dni',
             'name' => 'required|string|max:255',
@@ -41,7 +42,7 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email',
         ]);
 
-        // Crear el nuevo usuario
+        // Guardar usuario
         User::create($validated);
 
         return response()->json(['message' => 'Usuario creado con éxito']);
@@ -62,7 +63,7 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        // Validación para actualizar los campos
+        // Validar datos
         $validated = $request->validate([
             'dni' => 'required|string|max:10|unique:users,dni,' . $id,
             'name' => 'required|string|max:255',
@@ -71,7 +72,7 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email,' . $id,
         ]);
 
-        // Actualizar el usuario
+        // Actualizar usuario
         $user->update($validated);
 
         return redirect()->route('users.index')->with('success', 'Usuario actualizado con éxito.');

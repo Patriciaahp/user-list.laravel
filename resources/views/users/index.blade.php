@@ -58,67 +58,13 @@
         </div>
     </div>
 </div>
-
-<!-- Modal para creación de usuario -->
-<div class="modal fade" id="createUserModal" tabindex="-1" aria-labelledby="createUserModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="createUserModalLabel">Nuevo Usuario</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="create-user-form">
-                    @csrf
-                    <div class="form-group">
-                        <label for="dni">DNI</label>
-                        <input type="text" class="form-control" id="dni" name="dni" required maxlength="10">
-                    </div>
-                    <div class="form-group">
-                        <label for="name">Nombre Completo</label>
-                        <input type="text" class="form-control" id="name" name="name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="birth_date">Fecha de Nacimiento</label>
-                        <input type="date" class="form-control" id="birth_date" name="birth_date" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="phone">Teléfono</label>
-                        <input type="text" class="form-control" id="phone" name="phone" required maxlength="15">
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
-                    </div>
-                    <button type="submit" class="btn btn-success">Guardar</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal para edición de usuario -->
-<div class="modal fade" id="edit-user-modal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Editar Usuario</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body"></div>
-        </div>
-    </div>
-</div>
-
 @endsection
 
 @section('scripts')
 <script>
 $(document).ready(function() {
+
+    // Función para cargar usuarios con AJAX
     function loadUsers(page = 1, search = '') {
         $.ajax({
             url: "{{ route('users.index') }}",
@@ -150,6 +96,14 @@ $(document).ready(function() {
                 });
 
                 $('#pagination-links').html(response.pagination);
+
+                // Agregar evento a los enlaces de paginación generados dinámicamente
+                $('#pagination-links a').on('click', function(e) {
+                    e.preventDefault();
+                    let url = $(this).attr('href');
+                    let page = url.split('page=')[1]; 
+                    loadUsers(page, $('#search').val());
+                });
             },
             error: function(xhr) {
                 console.error("Error al cargar usuarios:", xhr.responseText);
@@ -157,13 +111,16 @@ $(document).ready(function() {
         });
     }
 
+    // Cargar la lista de usuarios al iniciar la página
     loadUsers();
 
+    // Evento para buscar usuarios
     $('#search-form').on('submit', function(e) {
         e.preventDefault();
         loadUsers(1, $('#search').val());
     });
 
+    // Evento para abrir formulario de edición
     $(document).on('click', '.edit-user', function() {
         let userId = $(this).data('id');
         $.get(`/users/${userId}/edit`, function(response) {
@@ -181,8 +138,8 @@ $(document).ready(function() {
             data: $(this).serialize(),
             success: function(response) {
                 alert("Usuario creado con éxito!");
-                $('#createUserModal').modal('hide'); // Cierra el modal
-                loadUsers(); // Recarga la lista de usuarios
+                $('#createUserModal').modal('hide'); 
+                loadUsers(); 
             },
             error: function(xhr) {
                 alert("Error al crear el usuario.");
