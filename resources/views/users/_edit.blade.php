@@ -1,7 +1,15 @@
 <form id="edit-user-form" action="{{ route('users.update', $user->id) }}" method="POST">
     @csrf
     @method('PUT')
-
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
     <div class="form-group">
         <label for="dni">DNI</label>
         <input type="text" name="dni" class="form-control" value="{{ old('dni', $user->dni) }}" required>
@@ -30,12 +38,3 @@
 
     <button type="submit" class="btn btn-primary">Actualizar Usuario</button>
 </form>
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif

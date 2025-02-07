@@ -59,7 +59,6 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email,' . $id,
         ]);
     
-        // Asegurar que birth_date no sea null
         if (!$request->has('birth_date')) {
             $validated['birth_date'] = $user->birth_date;
         }
