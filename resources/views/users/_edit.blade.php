@@ -14,8 +14,8 @@
 
     <div class="form-group">
         <label for="birth_date">Fecha de Nacimiento</label>
-        <input type="date" name="birth_date" class="form-control" value="{{ old('birth_date', $user->birth_date) }}" required>
-    </div>
+        <input type="date" name="birth_date" class="form-control" value="{{ old('birth_date', $user->birth_date ?? '') }}" required>
+        </div>
 
     <div class="form-group">
         <label for="phone">Teléfono</label>
@@ -29,3 +29,12 @@
 
     <button type="submit" class="btn btn-primary">Actualizar Usuario</button>
 </form>
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif

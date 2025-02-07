@@ -4,19 +4,32 @@
 <div class="container">
     <h1>Lista de Usuarios</h1>
 
+    <!-- Mensaje de éxito -->
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <!-- Formulario de búsqueda -->
     <form method="GET" action="{{ route('users.index') }}" class="mb-3">
-        <input type="text" name="search" value="{{ request('search') }}" placeholder="Buscar usuario...">
-        <button type="submit" class="btn btn-primary">Buscar</button>
+        <div class="input-group">
+            <input type="text" name="search" class="form-control" value="{{ request('search') }}" placeholder="Buscar usuario...">
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </div>
     </form>
 
+    <!-- Botón para añadir nuevo usuario -->
+    <a href="{{ route('users.create') }}" class="btn btn-success mb-3">Añadir Nuevo Usuario</a>
+
     <!-- Tabla -->
-    <table class="table">
+    <table class="table table-striped">
         <thead>
             <tr>
                 <th>DNI</th>
                 <th>Nombre</th>
                 <th>Email</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -25,15 +38,33 @@
                     <td>{{ $user->dni }}</td>
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>
+                    <td>
+                        <!-- Botón Editar -->
+                        <a href="{{ route('users.edit', $user->id) }}" class="btn btn-warning btn-sm">Editar</a>
+
+                        <!-- Botón Eliminar -->
+                        <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este usuario?')">Eliminar</button>
+                        </form>
+                    </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="3">No se encontraron usuarios.</td>
+                    <td colspan="4">No se encontraron usuarios.</td>
                 </tr>
             @endforelse
         </tbody>
     </table>
 
+    <!-- Paginación -->
     {{ $users->links('pagination::bootstrap-4') }}
 </div>
 @endsection
+
+@if (session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif

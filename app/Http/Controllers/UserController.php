@@ -11,7 +11,6 @@ class UserController extends Controller
     {
         $search = $request->search;
 
-        // Búsqueda simple
         $query = User::query();
 
         if (!empty($search)) {
@@ -29,19 +28,17 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        // Validar datos del usuario
         $validated = $request->validate([
             'dni' => 'required|string|max:10|unique:users,dni',
             'name' => 'required|string|max:255',
             'birth_date' => 'required|date',
-            'phone' => 'required|string|max:15',
+            'phone' => 'required|string|max:15|unique:users,phone',
             'email' => 'required|email|unique:users,email',
         ]);
 
-        // Guardar usuario
         User::create($validated);
 
-        return response()->json(['message' => 'Usuario creado con éxito']);
+        return response()->json(['message' => 'Usuario creado.']);
     }
 
     public function edit($id)
@@ -52,14 +49,13 @@ class UserController extends Controller
             return view('users.partials.edit-form', compact('user'));
         }
 
-        return view('users.edit', compact('user'));
+        return redirect()->route('users.index')->with('success', 'Usuario actualizado.');
     }
 
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
 
-        // Validar datos
         $validated = $request->validate([
             'dni' => 'required|string|max:10|unique:users,dni,' . $id,
             'name' => 'required|string|max:255',
@@ -68,9 +64,21 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email,' . $id,
         ]);
 
-        // Actualizar usuario
         $user->update($validated);
 
-        return redirect()->route('users.index')->with('success', 'Usuario actualizado con éxito.');
+        return redirect()->route('users.index')->with('success', 'Usuario actualizado.');
     }
+
+    public function create()
+{
+    return view('users.create');
+}
+
+public function destroy($id)
+{
+    $user = User::findOrFail($id);
+    $user->delete();
+
+    return redirect()->route('users.index')->with('success', 'Usuario eliminado.');
+}
 }
