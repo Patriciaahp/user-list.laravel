@@ -44,18 +44,13 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = User::findOrFail($id);
-
-        if (request()->ajax()) {
-            return view('users.partials.edit-form', compact('user'));
-        }
-
-        return redirect()->route('users.index')->with('success', 'Usuario actualizado.');
+        return view('users.edit', compact('user'));
     }
 
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
-
+    
         $validated = $request->validate([
             'dni' => 'required|string|max:10|unique:users,dni,' . $id,
             'name' => 'required|string|max:255',
@@ -63,9 +58,14 @@ class UserController extends Controller
             'phone' => 'required|string|max:15',
             'email' => 'required|email|unique:users,email,' . $id,
         ]);
-
+    
+        // Asegurar que birth_date no sea null
+        if (!$request->has('birth_date')) {
+            $validated['birth_date'] = $user->birth_date;
+        }
+    
         $user->update($validated);
-
+    
         return redirect()->route('users.index')->with('success', 'Usuario actualizado.');
     }
 

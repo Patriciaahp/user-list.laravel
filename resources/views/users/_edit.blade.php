@@ -14,7 +14,8 @@
 
     <div class="form-group">
         <label for="birth_date">Fecha de Nacimiento</label>
-        <input type="date" name="birth_date" class="form-control" value="{{ old('birth_date', $user->birth_date ?? '') }}" required>
+        <input type="date" name="birth_date" class="form-control"
+       value="{{ old('birth_date', optional($user->birth_date)->format('Y-m-d')) }}" required>
         </div>
 
     <div class="form-group">
