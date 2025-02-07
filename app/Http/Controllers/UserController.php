@@ -9,26 +9,22 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
+        $search = $request->search;
+
+        // Búsqueda simple
         $query = User::query();
-    
-        if ($request->has('search') && !empty($request->search)) {
-            $query->where('name', 'like', "%{$request->search}%")
-                  ->orWhere('dni', 'like', "%{$request->search}%")
-                  ->orWhere('email', 'like', "%{$request->search}%");
+
+        if (!empty($search)) {
+            $query->where('name', 'like', "%{$search}%")
+                  ->orWhere('dni', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
         }
-    
+
         $users = $query->paginate(10);
-    
-        // Responder en JSON si es una petición AJAX
-        if ($request->ajax()) {
-            return response()->json([
-                'users' => $users->items(),
-                'pagination' => (string) $users->links(),
-            ]);
-        }
-    
+
         return view('users.index', compact('users'));
     }
+
     
 
     public function store(Request $request)
